@@ -131,9 +131,15 @@ HTTP 메서드를 통해 행위를 명시할 수 있도록 RESTful 방식으로 
 
 ### 댓글 수정
 * 자신이 작성한 댓글을 수정할 수 있습니다.
+<img width="1724" alt="comment-update1" src="https://user-images.githubusercontent.com/43202607/183296205-aa135997-27a2-40f0-a2a3-5611640768a3.png">
+<img width="1724" alt="comment-update2" src="https://user-images.githubusercontent.com/43202607/183296209-ae3ff631-5014-405b-b2b0-7659fe26edb6.png">
+<img width="1724" alt="comment-update3" src="https://user-images.githubusercontent.com/43202607/183296211-6bb4f080-e2ce-4be7-89ae-713709f104ab.png">
 
 ### 댓글 삭제
 * 자신이 작성한 댓글을 삭제할 수 있습니다.
+<img width="1724" alt="comment-delete" src="https://user-images.githubusercontent.com/43202607/183296297-d81bdc9e-410f-4cdb-bfec-cbc066a90a9f.png">
+<img width="1680" alt="comment-delete2" src="https://user-images.githubusercontent.com/43202607/183296289-a23f7cbb-bdd0-49ab-994f-618f49638446.png">
+
 
 ## 회원 기능
 ### 회원가입
@@ -151,11 +157,15 @@ HTTP 메서드를 통해 행위를 명시할 수 있도록 RESTful 방식으로 
 <img width="1532" alt="login-success" src="https://user-images.githubusercontent.com/43202607/183293435-e707c650-696f-408f-8ba3-11acbac5b989.png">
 
   * 로그인을 완료하면 브라우저의 `Local Storage` 에 사용자 `id` 와 `JWT` 토큰 정보를 저장합니다.
-  <img width="1374" alt="login-after-devtool" src="https://user-images.githubusercontent.com/43202607/1<img width="1724" alt="bbs-update2" src="https://user-images.githubusercontent.com/43202607/183295296-b1879198-23fa-40cd-837e-13ad4e1d346c.png">
-83293460-68a98ae0-9e13-47c9-88f4-6ca5b429dc1a.png">
+  <img width="1374" alt="login-after-devtool" src="https://user-images.githubusercontent.com/43202607/183293460-68a98ae0-9e13-47c9-88f4-6ca5b429dc1a.png">
 
 
 * 로그아웃
+<img width="1724" alt="logout" src="https://user-images.githubusercontent.com/43202607/183296452-126a6bcc-3223-4230-88b0-0d2a51111b56.png">
+
+
+* 로그아웃을 완료하면 브라우저의 `Local Storage` 의 내용도 삭제합니다.
+<img width="1374" alt="logout-after-devtool" src="https://user-images.githubusercontent.com/43202607/183296489-b4710d6b-380d-4293-a102-a96735bd4749.png">
 
 
 # 👾 트러블슈팅
