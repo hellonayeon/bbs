@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="me.hellonayeon.backend.member.dao.MemberDao">
+
+<select id="findById" parameterType="String" resultType="me.hellonayeon.backend.member.domain.Member">
+
+SELECT id, name, pwd, email
+	FROM member
+	WHERE id=#{id}
+
+</select>
+
+<select id="isExistUserId" parameterType="String" resultType="java.lang.Integer">
+	SELECT count(*)
+	FROM member
+	WHERE id=#{id}
+</select>
+
+<insert id="createMember" parameterType="me.hellonayeon.backend.member.dto.param.CreateMemberParam">
+	INSERT INTO member(id, pwd, name, email)
+	VALUES(#{id}, #{pwd}, #{name}, #{email})
+</insert>
+
+<!--<select id="login" parameterType="me.hellonayeon.backend.member.domain.Member"-->
+<!--	resultType="me.hellonayeon.backend.member.domain.Member">-->
+<!--	select id, name, email-->
+<!--	from member-->
+<!--	where id=#{id} and pwd=#{pwd}-->
+<!--</select>-->
+
+</mapper>
+
+
+

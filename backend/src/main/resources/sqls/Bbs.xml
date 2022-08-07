@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="me.hellonayeon.backend.bbs.dao.BbsDao">
+
+	<!-- 글 목록 조회 -->
+	<select id="getBbsSearchPageList" parameterType="me.hellonayeon.backend.bbs.dto.param.BbsListParam"
+		resultType="me.hellonayeon.backend.bbs.domain.Bbs">
+		SELECT seq, id, ref, step, depth, title, content, created_at createdAt, del, read_count readCount
+		FROM
+					(SELECT row_number() OVER(ORDER BY ref DESC, step ASC) AS rnum,
+					seq, id, ref, step, depth, title, content, created_at, del, read_count
+					FROM bbs
+					<if test="choice != null and choice != ''
+								and search != null and search != '' ">
+						<if test="choice == 'title'">
+							WHERE title LIKE concat('%', #{search}, '%')
+						</if>
+						<if test="choice == 'content'">
+							WHERE content LIKE concat('%', #{search}, '%')
+						</if>
+						<if test="choice == 'writer'">
+							WHERE id=#{search}
+						</if>
+					</if>
+					ORDER BY ref DESC, step ASC) a
+		WHERE rnum BETWEEN ${pageStart} AND ${pageEnd}
+	</select>
+
+	<!-- 글 총 개수 조회 -->
+	<select id="getBbsCount" parameterType="me.hellonayeon.backend.bbs.dto.param.BbsCountParam" resultType="Integer">
+
+		SELECT ifnull(count(*), 0)
+		FROM bbs
+		<if test="choice != null and choice != ''
+		 			and search != null and search != '' ">
+			<if test="choice == 'title'">
+				WHERE title LIKE concat('%', #{search}, '%')
+			</if>
+			<if test="choice == 'content'">
+				WHERE content LIKE concat('%', #{search}, '%')
+			</if>
+			<if test="choice == 'writer'">
+				WHERE id=#{search}
+			</if>
+		</if>
+	</select>
+
+	<!-- 특정 게시글 조회 -->
+	<select id="getBbs" parameterType="Integer" resultType="me.hellonayeon.backend.bbs.domain.Bbs">
+		SELECT seq, id, ref, step, depth, title, content, created_at createdAt, del, read_count readCount
+		FROM bbs
+		WHERE seq=#{seq}
+		ORDER BY ref DESC, step ASC
+	</select>
+
+	<!-- 게시글 조회수 레코드 생성 -->
+	<insert id="createBbsReadCountHistory" parameterType="me.hellonayeon.backend.bbs.dto.param.CreateReadCountParam">
+		INSERT INTO read_history (bbs_seq, id, latest_access_at) VALUES (#{bbsSeq}, #{readerId}, NOW())
+		ON DUPLICATE KEY
+		UPDATE latest_access_at=NOW();
+	</insert>
+
+	<!-- 게시글 조회수 수정 -->
+	<update id="increaseBbsReadCount" parameterType="Integer">
+		UPDATE bbs
+		SET read_count = read_count + 1
+		WHERE seq = #{seq}
+	</update>
+
+	<!-- 게시글 작성 -->
+	<insert id="createBbs" parameterType="me.hellonayeon.backend.bbs.dto.param.CreateBbsParam"
+					useGeneratedKeys="true" keyProperty="seq">
+		INSERT bbs (id, ref, step, depth, title, content, created_at, del, read_count)
+		VALUES (#{id}, (SELECT ifnull(max(ref), 0)+1 from bbs b), 0, 0, #{title}, #{content}, NOW(), 0, 0)
+	</insert>
+
+	<!-- 답글 작성 -->
+	<!-- 부모 게시글 step 업데이트 -->
+	<update id="updateBbsStep" parameterType="Integer">
+		UPDATE bbs
+		SET step = step + 1
+		WHERE ref = (SELECT ref FROM (SELECT ref FROM bbs a WHERE seq=#{parentSeq}) A)
+		AND step > (SELECT step FROM (SELECT step FROM bbs b WHERE seq=#{parentSeq}) B)
+	</update>
+
+	<!-- 부모 게시글 하위 답글 개수 조회 (step 업데이트 성공 여부 확인 휘함) -->
+	<select id="getBbsAnswerCount" parameterType="Integer" resultType="Integer">
+		SELECT COUNT(*)
+		FROM bbs
+		WHERE ref = (SELECT ref FROM (SELECT ref FROM bbs a WHERE seq=#{parentSeq}) A)
+		AND step > (SELECT step FROM (SELECT step FROM bbs b WHERE seq=#{parentSeq}) B)
+	</select>
+
+	<!-- 새로운 답글 추가 -->
+	<insert id="createBbsAnswer" parameterType="me.hellonayeon.backend.bbs.dto.param.CreateBbsAnswerParam"
+					useGeneratedKeys="true" keyProperty="seq">
+		INSERT INTO bbs (id, ref, step, depth, title, content, created_at, del, read_count)
+		VALUES (#{id}, (SELECT ref FROM bbs a WHERE seq=#{parentSeq}),
+		        		(SELECT step FROM bbs b WHERE seq=#{parentSeq}) + 1,
+		       			(SELECT depth FROM bbs c WHERE seq=#{parentSeq}) + 1,
+		       			#{title}, #{content}, NOW(), 0, 0);
+	</insert>
+
+	<!-- 게시글 수정 -->
+	<!-- 수정 성공 시 1(수정한 레코드 개수) 을 반환, 실패 시 0 을 반환 -->
+	<update id="updateBbs" parameterType="me.hellonayeon.backend.bbs.dto.param.UpdateBbsParam">
+
+		UPDATE bbs
+		SET content=#{content}, title=#{title}
+		WHERE seq=#{seq}
+
+	</update>
+
+	<update id="deleteBbs" parameterType="Integer">
+		UPDATE bbs
+		SET del = 1
+		WHERE seq=#{seq}
+	</update>
+
+</mapper>
+
+
+

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="me.hellonayeon.backend.comment.dao.CommentDao">
+
+	<!-- 댓글 조회 -->
+	<select id="getCommentPageList" parameterType="me.hellonayeon.backend.comment.dto.param.CommentListParam"
+					resultType="me.hellonayeon.backend.comment.domain.Comment">
+
+		SELECT seq, id, content, bbs_seq bbsSeq, created_at createdAt, del
+		FROM (
+		    SELECT row_number() OVER(ORDER BY created_at DESC) AS rnum, seq, id, content, bbs_seq, created_at, del
+		    FROM comment
+				WHERE bbs_seq=#{bbsSeq}) a
+		WHERE rnum BETWEEN ${pageStart} AND ${pageEnd}
+
+	</select>
+
+	<!-- 댓글 총 개수 조회 -->
+	<select id="getCommentCount" parameterType="Integer" resultType="Integer">
+
+		SELECT ifnull(count(*), 0)
+		FROM comment
+		WHERE bbs_seq=#{seq}
+	</select>
+
+	<!-- 댓글 추가 -->
+	<insert id="createComment" parameterType="me.hellonayeon.backend.comment.dto.param.CreateCommentParam"
+					useGeneratedKeys="true" keyProperty="seq">
+		INSERT INTO comment (id, content, bbs_seq, created_at, del)
+		VALUES (#{id}, #{content}, #{bbsSeq}, NOW(), 0)
+	</insert>
+
+	<!-- 댓글 삭제 -->
+	<update id="deleteComment" parameterType="Integer">
+		UPDATE comment
+		SET del = 1
+		WHERE seq = #{seq}
+	</update>
+
+	<!-- 댓글 조회 -->
+	<select id="getCommentBySeq" parameterType="Integer"
+					resultType="me.hellonayeon.backend.comment.domain.Comment">
+		SELECT seq, id, content, bbs_seq bbsSeq, created_at createdAt, del
+		FROM comment
+		WHERE seq=#{seq}
+	</select>
+
+	<!-- 댓글 수정 -->
+	<update id="updateComment" parameterType="me.hellonayeon.backend.comment.dto.param.UpdateCommentParam">
+		UPDATE comment
+		SET content = #{content}
+		WHERE seq = #{seq}
+	</update>
+
+</mapper>
+
+
+
