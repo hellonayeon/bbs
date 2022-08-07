@@ -3,16 +3,21 @@
  `2022.08.04 ~ 2022.08.07` 동안 `Spring Boot` 와 `React` 를 사용해 구현했습니다.
 
 # 📚 목차
+* [프로젝트 구조](#-프로젝트-구조)
 * [사용 기술](#-사용-기술)
 * [구현 기능](#-구현-기능)
+* [기능 실행화면](#-기능-실행화면)
 * [API 명세서](#-API-명세서)
 * [ERD 설계](#-ERD-설계)
-* [기능 실행화면](#-기능-실행화면)
 
 # 🎃 프로젝트 구조
-```
+### 📌 Backend
+<img width="575" alt="backend-project-structure" src="https://user-images.githubusercontent.com/43202607/183297576-86a27c9f-d2cd-46ce-8f21-eb9845fe3caa.png">
 
-```
+
+### 🥕 Frontend
+<img width="574" alt="frontend-project-structure" src="https://user-images.githubusercontent.com/43202607/183297579-ddaad9a7-3d2b-467f-8519-c639e0feb8f3.png">
+
 
 # 🕹 사용 기술
 ### 📌 Backend
@@ -56,15 +61,9 @@
   * 회원가입
   * 로그인/로그아웃
   
-# 🤙🏻 API 명세서
-HTTP 메서드를 통해 행위를 명시할 수 있도록 RESTful 방식으로 설계했습니다. <br/><br/>
-
-<img width="997" alt="api-definition" src="https://user-images.githubusercontent.com/43202607/183290134-6aeeb889-2efd-4f18-ad53-7179a624e7e8.png">
-
-# 🕸 ERD 설계
-<img width="997" alt="erd" src="https://user-images.githubusercontent.com/43202607/183290205-3d55c22f-7564-4b75-b955-e33f505e99cd.png">
-
 # 🍭 기능 실행화면
+<details>
+
 ## 게시판 기능
 ### 모든 게시글 및 특정 게시글 조회
 * 모든 게시글을 조회할 수 있습니다. 페이징 기능을 통해 한 페이지에서 최대 10개의 게시글이 조회됩니다.
@@ -166,7 +165,15 @@ HTTP 메서드를 통해 행위를 명시할 수 있도록 RESTful 방식으로 
 
 * 로그아웃을 완료하면 브라우저의 `Local Storage` 의 내용도 삭제합니다.
 <img width="1374" alt="logout-after-devtool" src="https://user-images.githubusercontent.com/43202607/183296489-b4710d6b-380d-4293-a102-a96735bd4749.png">
+</details>  
+  
+# 🤙🏻 API 명세서
+HTTP 메서드를 통해 행위를 명시할 수 있도록 RESTful 방식으로 설계했습니다. <br/><br/>
 
+<img width="997" alt="api-definition" src="https://user-images.githubusercontent.com/43202607/183290134-6aeeb889-2efd-4f18-ad53-7179a624e7e8.png">
+
+# 🕸 ERD 설계
+<img width="997" alt="erd" src="https://user-images.githubusercontent.com/43202607/183290205-3d55c22f-7564-4b75-b955-e33f505e99cd.png">
 
 # 👾 트러블슈팅
 ### 회원 인증 및 인가 기능 구현 (Spring Security)
