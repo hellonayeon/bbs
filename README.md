@@ -62,7 +62,6 @@
   * 로그인/로그아웃
   
 # 🍭 기능 실행화면
-<details>
 
 ## 게시판 기능
 ### 모든 게시글 및 특정 게시글 조회
@@ -165,7 +164,6 @@
 
 * 로그아웃을 완료하면 브라우저의 `Local Storage` 의 내용도 삭제합니다.
 <img width="1374" alt="logout-after-devtool" src="https://user-images.githubusercontent.com/43202607/183296489-b4710d6b-380d-4293-a102-a96735bd4749.png">
-</details>  
   
 # 🤙🏻 API 명세서
 HTTP 메서드를 통해 행위를 명시할 수 있도록 RESTful 방식으로 설계했습니다. <br/><br/>
