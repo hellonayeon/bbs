@@ -9,6 +9,7 @@
 * [기능 실행화면](#-기능-실행화면)
 * [API 명세서](#-API-명세서)
 * [ERD 설계](#-ERD-설계)
+* [트러블슈팅](#-트러블슈팅)
 
 # 🎃 프로젝트 구조
 ### 📌 Backend
@@ -174,10 +175,104 @@ HTTP 메서드를 통해 행위를 명시할 수 있도록 RESTful 방식으로 
 <img width="997" alt="erd" src="https://user-images.githubusercontent.com/43202607/183290205-3d55c22f-7564-4b75-b955-e33f505e99cd.png">
 
 # 👾 트러블슈팅
-### 회원 인증 및 인가 기능 구현 (Spring Security)
+### 회원 인증 및 인가 기능 구현 (Spring Security + JWT)
 
-### CORS
+회원 및 비회원에 따라 가용한 기능에 제약을 두기 위해 Spring Security + JWT 토큰 방식으로 구현했다.
 
-### DTO 클래스 분리의 장단점
+![image](https://user-images.githubusercontent.com/43202607/183947721-222c124f-33dd-4f78-8317-cde386965013.png)
+
+
+
+<img width="1218" alt="security2" src="https://user-images.githubusercontent.com/43202607/183957212-4f15024d-771a-4fa7-801f-f666fdc09a39.png">
+
+<img width="1218" alt="security3" src="https://user-images.githubusercontent.com/43202607/183957257-20200bac-caee-498f-b194-ec9adb56f289.png">
+
+
+
+간단한 BBS 시스템을 만드는 것을 목표로 했으나, Spring Security 를 사용하니 인증 로직을 구현하기 복잡했다. Spring Security 의 동작 원리를 정확하게 모르는 상태에서 구현하려 하니 어려움이 있었다. (배보다 배꼽이 더 커진 느낌 🫤)
+
+Spring 에서 제공하는 Interceptor 기능과 ArgumentResolver, Annotation 기능을 사용하고 사용자 아이디만을 받아 인가 체크를 했다면 간단하게 구현 가능했을 것 같다.
+
+
+
+요청을 보낸 사용자를 판별하기 위해 `@AuthenticationPrincipal` 을 사용하여, 로그인 시 인증한 후 저장한 사용자 정보인 `UserDetails` 의 `username(Id)` 를 가져와 글 작성자와 비교했다.
+
+<img width="992" alt="comment-auth1" src="https://user-images.githubusercontent.com/43202607/184115493-5a9f5199-8d6e-406e-9cd2-12041239af3b.png">
+<img width="992" alt="comment-auth2" src="https://user-images.githubusercontent.com/43202607/184115507-ddc3700c-fa2f-4c6b-a526-4607d9388d71.png">
+
+
+
+### 사용자 로그인 요청 데이터 검증과 사용자 인증 예외 처리
+
+사용자가 회원가입과 로그인을 위해 입력한 데이터에 대해 `Bean Validation` 을 사용해 검증 기능을 구현했다.
+
+템플릿 엔진으로 서버에서 뷰를 그리는 방식이 아닌, 데이터만 전송하는 API 서버에서 입력값 검증에 대한 오류 메시지를 어떻게 전달해야 할지 고민했었다.
+
+ `Bean Validation` 에서 던진 예외를 받아서 처리한 다음 오류 메시지를 응답으로 내려주도록 구현했다.
+
+
+
+* **회원가입 요청 폼 데이터**
+
+<img width="992" alt="image-20220811192008968" src="https://user-images.githubusercontent.com/43202607/184113799-cbe32293-b316-406b-b635-c8372511dd0b.png">
+
+
+
+* **회원 가입 서비스**
+
+<img width="992" alt="join-service1" src="https://user-images.githubusercontent.com/43202607/184114162-67c74134-fb90-4c1f-807c-523ca644e31e.png">
+<img width="992" alt="join-service2" src="https://user-images.githubusercontent.com/43202607/184114178-2ca78b5d-9133-4d41-94e2-bb912a800295.png">
+
+<img width="992" alt="join-service2" src="https://user-images.githubusercontent.com/43202607/184114178-2ca78b5d-9133-4d41-94e2-bb912a800295.png">
+
+
+
+* **회원 가입 요청 처리 컨트롤러**
+
+<img width="992" alt="join-controller" src="https://user-images.githubusercontent.com/43202607/184114140-e8f9b13e-9d37-4707-8c69-1174f2a923e9.png">
+
+  
+
+  또한 사용자 관련 예외를 처리하기 위해 커스텀 예외를 만들어서 예외를 발생시키고 핸들러에서 처리할 수 있도록 구현했다.
+
+<img width="992" alt="member-exception-handler" src="https://user-images.githubusercontent.com/43202607/184115699-f38158ed-6f9a-4081-9f37-1a2db8839fe5.png">
+
+
+
+`@AdviceController` 를 더 많이 사용한다고 했는데, 이 프로젝트에서는 회원 관련된 예외 처리만을 작성하기 위해 전역 예외처리를 사용하지 않았다. 또한 평소에도 컨트롤러별로 처리하는 예외를 세분화 하는게 좋지 않을까? 라는 생각을 가지고 있었다. 
+
+하지만 결국 어떤 예외처리든 서버에서 발생한 예외를 처리한 다음 요청을 보낸 프론트 쪽으로 상태 코드든 오류 메시지든 내려줘야 한다. 따라서 커스텀 예외와 예외 메시지를 범용성 있게 작성하면 오히려 전역에서 예외처리 하는게 일관성 있을 것이라는 깨달음을 얻었다.
+
+
+
+### DTO 클래스 분리
+
+요청과 응답으로 주고받는 데이터를 한 눈에 확인하기 위해 요청 데이터와 응답 데이터를 각각의 DTO로 분리했다.
+
+요청으로 받은 데이터를 바탕으로 SQL 쿼리를 수행할 때 필요한 데이터만을 넘겨주기 위해 Service에서 Dao로 넘기는 파라미터도 DTO로 분리했다.
+
+
+
+<img width="612" alt="image" src="https://user-images.githubusercontent.com/43202607/183961060-6ce76a4e-3d81-4a92-abb8-0c5687153d04.png">
+
+
+
+이렇게 구현했을 때의 장점은 컨트롤러 메서드의 파라미터로 많은 인자를 넘겨주지 않아도 된다는 점, 주고받는 데이터를 확인하고 수정해야하는 경우 DTO 클래스 만을 수정해야 하는 점이었다.
+
+하지만 단점은 기능이 추가될 때마다 클래스 파일이 늘어나 관리가 힘들어졌고, 데이터를 한 눈에 확인할 수 있지만 확인하기 위해서는 직접 클래스 파일을 열어봐야 한다는 점 이었다.
+
+요청 파라미터가 많지 않은 경우 (2-3개) 굳이 클래스 파일로 따로 작성하지 않고 컨트롤러 메서드에 어노테이션으로 매핑하는 것이 코드의 가독성과 유지보수 측면에서 좋은 방법이 될 것이라 생각된다.
+
+
+
+### 조회수 중복 카운팅 예방
+
+게시글 조회수 중복 카운팅 예방을 위해 `read_history` 테이블을 두어 구현했다. 
+
+`Cookie` 의 경우 하나의 도메인 당 사용할 수 있는 개수가 제한되기 때문에, 여러 게시글을 조회하면 제한 개수를 넘어버릴 것이라 예상했다. 그래서 사용자가 이미 읽은 게시글인지 확인할 수 있도록 서버에서 `사용자 아이디` `게시글` `조회 시간` 을 두어 체크했다.
+
+<img width="992" alt="read_count_dup" src="https://user-images.githubusercontent.com/43202607/184116080-e65ff2f5-4c8d-4525-9cc2-e8ed592a66cf.png">
+
+스케쥴러를 구현해 24시간 단위로 조회수를 초기화 시켜서 다음날이 되면 조회수가 다시 카운팅 될 수 있게끔 구현하면 좋을 것 같다. 아니면 조회수라는 데이터를 관리하지 않고 읽은 글, 읽지 않은 글 로 관리될 수 있도록 구현하는 것도 하나의 좋은 방법이라 생각한다.
 
 
