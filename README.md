@@ -239,9 +239,7 @@ https://github.com/hellonayeon/bbs/blob/aede584cff3b95566f3f5a77052d603fe01461c5
 요청으로 받은 데이터를 바탕으로 SQL 쿼리를 수행할 때 필요한 데이터만을 넘겨주기 위해 Service에서 Dao로 넘기는 파라미터도 DTO로 분리했다.
 
 
-
-<img width="612" alt="image" src="https://user-images.githubusercontent.com/43202607/183961060-6ce76a4e-3d81-4a92-abb8-0c5687153d04.png">
-
+<img width="558" alt="project-structure" src="https://user-images.githubusercontent.com/43202607/184118909-0a503b1c-23c1-469b-94f7-4e5b67bbf0b0.png">
 
 
 이렇게 구현했을 때의 장점은 컨트롤러 메서드의 파라미터로 많은 인자를 넘겨주지 않아도 된다는 점, 주고받는 데이터를 확인하고 수정해야하는 경우 DTO 클래스 만을 수정해야 하는 점이었다.
